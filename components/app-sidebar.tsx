@@ -1,40 +1,63 @@
 "use client"
 
 import type * as React from "react"
-import { Calendar, Users, Settings, BarChart3, FileText, Building2, ChevronDown, Home, ImageIcon } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import {
+  BookOpen,
+  GalleryVerticalEnd,
+  Settings2,
+  SquareTerminal,
+  Users,
+  FileText,
+  BarChart3,
+  Building2,
+  ChevronRight,
+} from "lucide-react"
+import { NavUser } from "@/components/nav-user"
+import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
   SidebarHeader,
+  SidebarRail,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
 } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import Link from "next/link"
 
+// This is sample data.
 const data = {
+  user: {
+    name: "Admin User",
+    email: "admin@intaj.com",
+    avatar: "/placeholder-user.jpg",
+  },
+  teams: [
+    {
+      name: "Intaj Admin",
+      logo: GalleryVerticalEnd,
+      plan: "Enterprise",
+    },
+  ],
   navMain: [
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: Home,
-      isActive: false,
+      icon: SquareTerminal,
+      isActive: true,
     },
     {
       title: "User Management",
       url: "/dashboard/users",
       icon: Users,
-      isActive: false,
       items: [
         {
           title: "All Users",
@@ -53,8 +76,7 @@ const data = {
     {
       title: "Category Management",
       url: "/dashboard/categories",
-      icon: FileText,
-      isActive: false,
+      icon: BookOpen,
       items: [
         {
           title: "All Categories",
@@ -70,7 +92,6 @@ const data = {
       title: "Solution Providers",
       url: "/dashboard/providers",
       icon: Building2,
-      isActive: false,
       items: [
         {
           title: "Registration Requests",
@@ -89,8 +110,7 @@ const data = {
     {
       title: "Request Management",
       url: "/dashboard/requests",
-      icon: Calendar,
-      isActive: false,
+      icon: FileText,
       items: [
         {
           title: "All Requests",
@@ -110,13 +130,11 @@ const data = {
       title: "Analytics",
       url: "/dashboard/analytics",
       icon: BarChart3,
-      isActive: false,
     },
     {
       title: "Settings",
       url: "/dashboard/settings",
-      icon: Settings,
-      isActive: false,
+      icon: Settings2,
       items: [
         {
           title: "General Settings",
@@ -140,106 +158,56 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
-
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-2">
-          <div className="bg-gradient-to-r from-orange-400 to-amber-400 w-8 h-8 rounded-lg flex items-center justify-center">
-            <Calendar className="text-white text-lg" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-white">Intaj</h2>
-            <p className="text-xs text-white/70">Admin Portal</p>
-          </div>
-        </div>
+        <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent className="overflow-y-auto pb-20">
         <SidebarGroup>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-3">
-              {data.navMain.map((item, index) => (
-                <SidebarMenuItem
-                  key={item.title}
-                  className={cn("mb-3", item.title === "Solution Providers" && "mb-20")}
-                >
-                  {item.items ? (
-                    <Collapsible defaultOpen className="group/collapsible">
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton
-                          className={cn(
-                            "w-full justify-between bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl py-4 px-4 transition-all duration-300",
-                            pathname.startsWith(item.url) &&
-                              "bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/30",
-                          )}
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-5 w-5" />
-                            <span className="font-medium">{item.title}</span>
-                          </div>
-                          <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
+              {data.navMain.map((item) => (
+                <Collapsible key={item.title} asChild defaultOpen={item.isActive} className="group/collapsible">
+                  <SidebarMenuItem className={item.title === "Solution Providers" ? "mb-20" : "mb-3"}>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton tooltip={item.title}>
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                        {item.items && (
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        )}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    {item.items?.length ? (
                       <CollapsibleContent>
                         <SidebarMenuSub
-                          className={cn(
-                            "mt-2 space-y-3 ml-4 border-l border-white/10 pl-4",
-                            item.title === "Solution Providers" && "pb-24",
-                          )}
+                          className={item.title === "Solution Providers" ? "pb-24 space-y-3" : "space-y-2"}
                         >
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton
-                                asChild
-                                className={cn(
-                                  "bg-white/5 hover:bg-white/10 text-white/90 hover:text-white border border-white/10 rounded-lg py-4 px-4 transition-all duration-300",
-                                  pathname === subItem.url &&
-                                    "bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/30 text-white",
-                                )}
-                              >
+                              <SidebarMenuSubButton asChild className="py-4">
                                 <Link href={subItem.url}>
-                                  <span className="font-medium">{subItem.title}</span>
+                                  <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
                         </SidebarMenuSub>
                       </CollapsibleContent>
-                    </Collapsible>
-                  ) : (
-                    <SidebarMenuButton
-                      asChild
-                      className={cn(
-                        "bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl py-4 px-4 transition-all duration-300",
-                        pathname === item.url &&
-                          "bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/30",
-                      )}
-                    >
-                      <Link href={item.url}>
-                        <item.icon className="h-5 w-5" />
-                        <span className="font-medium">{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  )}
-                </SidebarMenuItem>
+                    ) : (
+                      <Link href={item.url} />
+                    )}
+                  </SidebarMenuItem>
+                </Collapsible>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="p-4 border-t border-white/10">
-          <div className="flex items-center gap-3 text-white/80">
-            <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full flex items-center justify-center">
-              <ImageIcon className="text-sm font-medium" />
-            </div>
-            <div>
-              <p className="text-sm font-medium">Admin User</p>
-              <p className="text-xs text-white/60">admin@intaj.com</p>
-            </div>
-          </div>
-        </div>
+        <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
