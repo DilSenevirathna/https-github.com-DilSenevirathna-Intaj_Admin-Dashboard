@@ -1,164 +1,247 @@
 "use client"
 
-import { useState } from "react"
-import {
-  BarChart3,
-  Users,
-  FileText,
-  FolderOpen,
-  Building2,
-  Settings,
-  Calendar,
-  ChevronDown,
-  TrendingUp,
-} from "lucide-react"
-import { usePathname } from "next/navigation"
+import type * as React from "react"
+import { Calendar, Users, Settings, BarChart3, FileText, Building2, ChevronDown, Home, ImageIcon } from "lucide-react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarRail,
+} from "@/components/ui/sidebar"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
-interface SidebarProps {
-  sidebarOpen: boolean
-  setSidebarOpen: (open: boolean) => void
+const data = {
+  navMain: [
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: Home,
+      isActive: false,
+    },
+    {
+      title: "User Management",
+      url: "/dashboard/users",
+      icon: Users,
+      isActive: false,
+      items: [
+        {
+          title: "All Users",
+          url: "/dashboard/users",
+        },
+        {
+          title: "User Registration",
+          url: "/dashboard/users/register",
+        },
+        {
+          title: "OTP Confirmation",
+          url: "/dashboard/users/otp",
+        },
+      ],
+    },
+    {
+      title: "Category Management",
+      url: "/dashboard/categories",
+      icon: FileText,
+      isActive: false,
+      items: [
+        {
+          title: "All Categories",
+          url: "/dashboard/categories",
+        },
+        {
+          title: "Add Category",
+          url: "/dashboard/categories/add",
+        },
+      ],
+    },
+    {
+      title: "Solution Providers",
+      url: "/dashboard/providers",
+      icon: Building2,
+      isActive: false,
+      items: [
+        {
+          title: "Registration Requests",
+          url: "/dashboard/providers/requests",
+        },
+        {
+          title: "Add Provider",
+          url: "/dashboard/providers/add",
+        },
+        {
+          title: "Manage Providers",
+          url: "/dashboard/providers",
+        },
+      ],
+    },
+    {
+      title: "Request Management",
+      url: "/dashboard/requests",
+      icon: Calendar,
+      isActive: false,
+      items: [
+        {
+          title: "All Requests",
+          url: "/dashboard/requests",
+        },
+        {
+          title: "Review Requests",
+          url: "/dashboard/requests/review",
+        },
+        {
+          title: "Track & Follow-up",
+          url: "/dashboard/requests/track",
+        },
+      ],
+    },
+    {
+      title: "Analytics",
+      url: "/dashboard/analytics",
+      icon: BarChart3,
+      isActive: false,
+    },
+    {
+      title: "Settings",
+      url: "/dashboard/settings",
+      icon: Settings,
+      isActive: false,
+      items: [
+        {
+          title: "General Settings",
+          url: "/dashboard/settings",
+        },
+        {
+          title: "Image Sliders",
+          url: "/dashboard/settings/sliders",
+        },
+        {
+          title: "Advertisement Management",
+          url: "/dashboard/settings/ads",
+        },
+        {
+          title: "Technical Configuration",
+          url: "/dashboard/settings/technical",
+        },
+      ],
+    },
+  ],
 }
 
-export function AppSidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
-  const [expandedMenus, setExpandedMenus] = useState<string[]>([])
-
-  const toggleMenu = (menuId: string) => {
-    setExpandedMenus((prev) => (prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [...prev, menuId]))
-  }
-
-  const menuItems = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: BarChart3,
-      href: "/dashboard",
-    },
-    {
-      id: "users",
-      label: "User Management",
-      icon: Users,
-      submenu: [
-        { id: "user-registration", label: "User Registration", href: "/dashboard/users/register" },
-        { id: "otp-confirmation", label: "OTP Confirmation", href: "/dashboard/users/otp" },
-        { id: "view-users", label: "View Users", href: "/dashboard/users" },
-      ],
-    },
-    {
-      id: "service-requests",
-      label: "Service Requests",
-      icon: FileText,
-      submenu: [
-        { id: "view-requests", label: "View Requests", href: "/dashboard/requests" },
-        { id: "review-request", label: "Review Request", href: "/dashboard/requests/review" },
-        { id: "track-followup", label: "Track & Follow-up", href: "/dashboard/requests/track" },
-      ],
-    },
-    {
-      id: "categories",
-      label: "Category Management",
-      icon: FolderOpen,
-      submenu: [
-        { id: "add-category", label: "Add Category", href: "/dashboard/categories/add" },
-        { id: "view-categories", label: "View Categories", href: "/dashboard/categories" },
-      ],
-    },
-    {
-      id: "solution-providers",
-      label: "Solution Providers",
-      icon: Building2,
-      submenu: [
-        { id: "view-sp-requests", label: "Registration Requests", href: "/dashboard/providers/requests" },
-        { id: "add-sp", label: "Add Provider", href: "/dashboard/providers/add" },
-        { id: "manage-sp", label: "Manage Providers", href: "/dashboard/providers" },
-      ],
-    },
-    {
-      id: "analytics",
-      label: "Analytics",
-      icon: TrendingUp,
-      href: "/dashboard/analytics",
-    },
-    {
-      id: "settings",
-      label: "Settings",
-      icon: Settings,
-      submenu: [
-        { id: "image-slider", label: "Image Slider", href: "/dashboard/settings/sliders" },
-        { id: "ad-placements", label: "Ad Placements", href: "/dashboard/settings/ads" },
-        { id: "technical-config", label: "Technical Config", href: "/dashboard/settings/technical" },
-      ],
-    },
-  ]
 
   return (
-    <div
-      className={`${
-        sidebarOpen ? "w-64" : "w-16"
-      } bg-gray-900/50 backdrop-blur-lg border-r border-white/10 h-screen transition-all duration-300 overflow-y-auto`}
-    >
-      <div className="p-4">
-        <div className="flex items-center space-x-3">
-          <div className="bg-gradient-to-r from-orange-400 to-amber-400 w-10 h-10 rounded-lg flex items-center justify-center">
-            <Calendar className="text-white text-xl" />
+    <Sidebar variant="inset" {...props}>
+      <SidebarHeader>
+        <div className="flex items-center gap-2 px-4 py-2">
+          <div className="bg-gradient-to-r from-orange-400 to-amber-400 w-8 h-8 rounded-lg flex items-center justify-center">
+            <Calendar className="text-white text-lg" />
           </div>
-          {sidebarOpen && <h2 className="text-white font-bold text-lg">Intaj Admin</h2>}
+          <div>
+            <h2 className="text-lg font-bold text-white">Intaj</h2>
+            <p className="text-xs text-white/70">Admin Portal</p>
+          </div>
         </div>
-      </div>
-
-      <nav className="mt-8 pb-20">
-        {menuItems.map((item) => (
-          <div key={item.id} className={`mb-3 ${item.id === "solution-providers" ? "mb-20" : "mb-3"}`}>
-            {item.submenu ? (
-              <>
-                <button
-                  onClick={() => toggleMenu(item.id)}
-                  className="w-full flex items-center px-4 py-4 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 rounded-lg mx-2"
+      </SidebarHeader>
+      <SidebarContent className="overflow-y-auto pb-20">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-3">
+              {data.navMain.map((item, index) => (
+                <SidebarMenuItem
+                  key={item.title}
+                  className={cn("mb-3", item.title === "Solution Providers" && "mb-20")}
                 >
-                  <item.icon size={20} />
-                  {sidebarOpen && (
-                    <>
-                      <span className="ml-3 flex-1 text-left">{item.label}</span>
-                      <ChevronDown
-                        size={16}
-                        className={`transition-transform duration-200 ${
-                          expandedMenus.includes(item.id) ? "rotate-180" : ""
-                        }`}
-                      />
-                    </>
-                  )}
-                </button>
-                {expandedMenus.includes(item.id) && sidebarOpen && (
-                  <div className={`ml-8 space-y-3 ${item.id === "solution-providers" ? "pb-24" : "pb-6"}`}>
-                    {item.submenu.map((subItem) => (
-                      <Link
-                        key={subItem.id}
-                        href={subItem.href}
-                        className={`block px-4 py-4 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 ${
-                          pathname === subItem.href ? "text-white bg-white/5 border-l-2 border-orange-400" : ""
-                        }`}
-                      >
-                        {subItem.label}
+                  {item.items ? (
+                    <Collapsible defaultOpen className="group/collapsible">
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton
+                          className={cn(
+                            "w-full justify-between bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl py-4 px-4 transition-all duration-300",
+                            pathname.startsWith(item.url) &&
+                              "bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/30",
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-5 w-5" />
+                            <span className="font-medium">{item.title}</span>
+                          </div>
+                          <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub
+                          className={cn(
+                            "mt-2 space-y-3 ml-4 border-l border-white/10 pl-4",
+                            item.title === "Solution Providers" && "pb-24",
+                          )}
+                        >
+                          {item.items.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                className={cn(
+                                  "bg-white/5 hover:bg-white/10 text-white/90 hover:text-white border border-white/10 rounded-lg py-4 px-4 transition-all duration-300",
+                                  pathname === subItem.url &&
+                                    "bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/30 text-white",
+                                )}
+                              >
+                                <Link href={subItem.url}>
+                                  <span className="font-medium">{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ) : (
+                    <SidebarMenuButton
+                      asChild
+                      className={cn(
+                        "bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl py-4 px-4 transition-all duration-300",
+                        pathname === item.url &&
+                          "bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/30",
+                      )}
+                    >
+                      <Link href={item.url}>
+                        <item.icon className="h-5 w-5" />
+                        <span className="font-medium">{item.title}</span>
                       </Link>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <Link
-                href={item.href!}
-                className={`w-full flex items-center px-4 py-4 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 mx-2 rounded-lg ${
-                  pathname === item.href ? "bg-white/10 text-white border-r-2 border-orange-400" : ""
-                }`}
-              >
-                <item.icon size={20} />
-                {sidebarOpen && <span className="ml-3">{item.label}</span>}
-              </Link>
-            )}
+                    </SidebarMenuButton>
+                  )}
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <div className="p-4 border-t border-white/10">
+          <div className="flex items-center gap-3 text-white/80">
+            <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full flex items-center justify-center">
+              <ImageIcon className="text-sm font-medium" />
+            </div>
+            <div>
+              <p className="text-sm font-medium">Admin User</p>
+              <p className="text-xs text-white/60">admin@intaj.com</p>
+            </div>
           </div>
-        ))}
-      </nav>
-    </div>
+        </div>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
   )
 }
