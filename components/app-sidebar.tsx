@@ -1,57 +1,48 @@
 "use client"
 
-import type * as React from "react"
+import type React from "react"
 import {
-  BookOpen,
-  GalleryVerticalEnd,
-  Settings2,
-  SquareTerminal,
+  BarChart3,
   Users,
   FileText,
-  BarChart3,
+  FolderOpen,
   Building2,
-  ChevronRight,
+  Settings,
+  Calendar,
+  ChevronDown,
+  TrendingUp,
 } from "lucide-react"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { usePathname } from "next/navigation"
+import Link from "next/link"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
-  SidebarRail,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
+  SidebarRail,
 } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import Link from "next/link"
 
-// This is sample data.
 const data = {
   user: {
     name: "Admin User",
     email: "admin@intaj.com",
     avatar: "/placeholder-user.jpg",
   },
-  teams: [
-    {
-      name: "Intaj Admin",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-  ],
   navMain: [
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: SquareTerminal,
+      icon: BarChart3,
       isActive: true,
     },
     {
@@ -76,7 +67,7 @@ const data = {
     {
       title: "Category Management",
       url: "/dashboard/categories",
-      icon: BookOpen,
+      icon: FolderOpen,
       items: [
         {
           title: "All Categories",
@@ -129,12 +120,12 @@ const data = {
     {
       title: "Analytics",
       url: "/dashboard/analytics",
-      icon: BarChart3,
+      icon: TrendingUp,
     },
     {
       title: "Settings",
       url: "/dashboard/settings",
-      icon: Settings2,
+      icon: Settings,
       items: [
         {
           title: "General Settings",
@@ -158,56 +149,99 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
+
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" className="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <div className="flex items-center gap-2 px-4 py-2">
+          <div className="bg-gradient-to-r from-orange-400 to-amber-400 w-8 h-8 rounded-lg flex items-center justify-center">
+            <Calendar className="text-white text-lg" />
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <h2 className="text-lg font-bold text-white">Intaj</h2>
+            <p className="text-xs text-white/70">Admin Portal</p>
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent className="overflow-y-auto pb-20">
         <SidebarGroup>
-          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-white/70">Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-3">
               {data.navMain.map((item) => (
-                <Collapsible key={item.title} asChild defaultOpen={item.isActive} className="group/collapsible">
-                  <SidebarMenuItem className={item.title === "Solution Providers" ? "mb-20" : "mb-3"}>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={item.title}>
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                        {item.items && (
-                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        )}
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    {item.items?.length ? (
+                <SidebarMenuItem key={item.title} className={item.title === "Solution Providers" ? "mb-20" : "mb-3"}>
+                  {item.items ? (
+                    <Collapsible defaultOpen className="group/collapsible">
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          className="bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl py-4 px-4 transition-all duration-300 data-[state=open]:bg-gradient-to-r data-[state=open]:from-orange-500/20 data-[state=open]:to-amber-500/20 data-[state=open]:border-orange-400/30"
+                        >
+                          <item.icon className="h-5 w-5" />
+                          <span className="font-medium">{item.title}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub
-                          className={item.title === "Solution Providers" ? "pb-24 space-y-3" : "space-y-2"}
+                          className={`mt-2 space-y-3 ml-4 border-l border-white/10 pl-4 ${
+                            item.title === "Solution Providers" ? "pb-24" : "pb-6"
+                          }`}
                         >
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton asChild className="py-4">
+                              <SidebarMenuSubButton
+                                asChild
+                                className={`bg-white/5 hover:bg-white/10 text-white/90 hover:text-white border border-white/10 rounded-lg py-4 px-4 transition-all duration-300 ${
+                                  pathname === subItem.url
+                                    ? "bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/30 text-white"
+                                    : ""
+                                }`}
+                              >
                                 <Link href={subItem.url}>
-                                  <span>{subItem.title}</span>
+                                  <span className="font-medium">{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
                         </SidebarMenuSub>
                       </CollapsibleContent>
-                    ) : (
-                      <Link href={item.url} />
-                    )}
-                  </SidebarMenuItem>
-                </Collapsible>
+                    </Collapsible>
+                  ) : (
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={item.title}
+                      className={`bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl py-4 px-4 transition-all duration-300 ${
+                        pathname === item.url
+                          ? "bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/30"
+                          : ""
+                      }`}
+                    >
+                      <Link href={item.url}>
+                        <item.icon className="h-5 w-5" />
+                        <span className="font-medium">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  )}
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <div className="p-4 border-t border-white/10">
+          <div className="flex items-center gap-3 text-white/80 group-data-[collapsible=icon]:justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full flex items-center justify-center">
+              <span className="text-sm font-medium">A</span>
+            </div>
+            <div className="group-data-[collapsible=icon]:hidden">
+              <p className="text-sm font-medium">Admin User</p>
+              <p className="text-xs text-white/60">admin@intaj.com</p>
+            </div>
+          </div>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
