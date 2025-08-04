@@ -14,7 +14,7 @@ Any changes you make to your deployed app will be automatically pushed to this r
 
 Your project is live at:
 
-**[[https://vercel.com/dilmi-senevirathnas-projects/v0-intaj-admin-interface](https://vercel.com/dilmi-senevirathnas-projects/v0-intaj-admin-interface)](https://https-github-com-dil-senevirathna-i-nine.vercel.app/)**
+https://https-github-com-dil-senevirathna-i-nine.vercel.app/
 
 ## Build your app
 
